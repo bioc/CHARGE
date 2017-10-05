@@ -1,1 +1,1 @@
-# CHromosome Assessment in R from Gene Expression (CHARGE) #
+# CHromosome Assessment in R with Gene Expression data (CHARGE) #
