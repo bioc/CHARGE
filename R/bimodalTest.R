@@ -1,8 +1,8 @@
 
-bimodalTest <- function(se, chr){
+bimodalTest <- function(se, cvExpr, threshold = NULL){
   
   library(SummarizedExperiment)
-  
+  library(modes)
   
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
@@ -10,8 +10,17 @@ bimodalTest <- function(se, chr){
     stop("se must be a RangedSummarizedExperiment")
   }
   
-  ### Subset se for genes on the chromosome of interest and extract the 
-  datCounts <- data.frame(t(assay(se[seqnames(se) == chr])))
+  ### Subset genes from the cvExpr using the input from threshold
+  if(is.null(threshold)){
+    #### Use all the gene in the analysis if threshold = NULL 
+    genes <- names(cvExpr[[1]])
+  } else {
+    #### Subset the genes based on defined quantile threshold
+    genes <- names(which(cvExpr[[1]] > cvExpr[[2]][threshold]))
+  }
+  
+  ### Subset se for genes 
+  datCounts <- data.frame(t(assay(se)[genes, ]))
   
   #### Calulate the mean z score for each sample by calulating the z score for each gene in each sample
   datZscores <- scale(x = datCounts)
