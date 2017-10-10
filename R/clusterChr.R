@@ -1,4 +1,5 @@
-clusterChr <- function(se, chr){
+
+clusterChr <- function(se, cvExpr, threshold = NULL){
   
   library(SummarizedExperiment)
   
@@ -8,8 +9,17 @@ clusterChr <- function(se, chr){
     stop("se must be a RangedSummarizedExperiment")
   }
   
-  ### Subset se for genes on the chromosome of interest 
-  datCounts <- assay(se[seqnames(se) == chr])
+  ### Subset genes from the cvExpr using the input from threshold
+  if(is.null(threshold)){
+    #### Use all the gene in the analysis if threshold = NULL 
+    genes <- names(cvExpr[[1]])
+  } else {
+    #### Subset the genes based on defined quantile threshold
+    genes <- names(which(cvExpr[[1]] > cvExpr[[2]][threshold]))
+  }
+  
+  ### Subset se for genes 
+  datCounts <- assay(se)[genes, ]
   
   ### Perform a k-means clustering using two clusters (euploidy vs aneuploidy) 
   kmeans.Out <- kmeans(x = t(datCounts), centers = 2)
@@ -23,14 +33,14 @@ clusterChr <- function(se, chr){
   pd <- data.frame(kmeans.Out$cluster)
   colnames(pd) <- "Ploidy"
   
-  if(Cluster1_Mean > Cluster2_Mean){
+    if(Cluster1_Mean > Cluster2_Mean){
     
     pd$Ploidy <- ifelse(test = pd$Ploidy == 1, yes = "Hyperploidy", no = "Hypoploidy")
     
   } else {
-    
+  
     pd$Ploidy <- ifelse(test = pd$Ploidy == 2, yes = "Hyperploidy", no = "Hypoploidy")
-    
+
   }
   
   ### Extract the meta data from se to combine with the clustering data
@@ -39,3 +49,4 @@ clusterChr <- function(se, chr){
   return(se)
   
 }
+  
