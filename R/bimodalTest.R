@@ -1,8 +1,18 @@
+#' bimodalTest
+#'
+#' Performs a bimodal 
+#'
+#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param cvExprA The output from cvExpr.
+#' @param threshold Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.
+#' @usage bimodalTest(se, cvExpr, threshold = NULL)
+#' @return Returns a list containing the output from the bimodal test.
+#' @import SummarizedExperiment
+#' @import modes
+#' @author Benjamin Mayne
+#' @export
 
 bimodalTest <- function(se, cvExpr, threshold = NULL){
-  
-  library(SummarizedExperiment)
-  library(modes)
   
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
