@@ -1,0 +1,17 @@
+Package: CHARGE
+Type: Package
+Title: CHARGE: CHromosome Assessment in R from Gene Expression data
+Version: 0.99.01
+Date: 2017-10-11
+Author: Benjamin Mayne
+Maintainer: Benjamin Mayne <benjamin.mayne@sahmri.com>
+Depends: R (>= 3.4.1)
+Imports: SummarizedExperiment, matrixStats, GenomicRanges, ggplot2
+Suggests: roxygen2
+biocViews: GeneExpression, Clustering
+Description: Predicts samples with additional or deletion of chromosomes. 
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Collate: 'cvExpr.R' 'pcaExpr.R' 'plotcvExpr.R' 'clusterExpr.R' 'bimodalTest.R'
