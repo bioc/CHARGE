@@ -1,5 +1,5 @@
 
-clusterChr <- function(se, cvExpr, threshold = NULL){
+clusterExpr <- function(se, cvExpr, threshold = NULL){
   
   library(SummarizedExperiment)
   
