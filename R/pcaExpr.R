@@ -1,9 +1,19 @@
+#' pcaExprs 
+#'
+#' Determines the coefficient of variation (CV) for gene expression 
+#'
+#' @param se A SummarizedExperiment containing the gene expression data and the clustering output from clusterExpr.
+#' @param cvExprA The output from cvExpr.
+#' @param threshold Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.
+#' @usage pcaExprs(se, cvExpr, threshold = NULL)
+#' @return Returns a PCA plot showing the seperation of samples that were labelled hyperploidy or hypoploidy in clusterExpr.
+#' @import SummarizedExperiment
+#' @import factoextra
+#' @import FactoMineR
+#' @author Benjamin Mayne
+#' @export
 
 pcaExpr <- function(se, cvExpr, threshold = NULL){
-  
-  library(SummarizedExperiment)
-  library(FactoMineR)
-  library(factoextra)
   
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
@@ -36,4 +46,3 @@ pcaExpr <- function(se, cvExpr, threshold = NULL){
                addEllipses=TRUE, ellipse.level=0.5)
 
 }
-  
