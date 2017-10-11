@@ -1,5 +1,5 @@
 
-pcaChr <- function(se, cvExpr, threshold = NULL){
+pcaExpr <- function(se, cvExpr, threshold = NULL){
   
   library(SummarizedExperiment)
   library(FactoMineR)
