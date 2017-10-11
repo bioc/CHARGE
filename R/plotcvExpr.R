@@ -1,7 +1,15 @@
+#' plotcvExpr 
+#'
+#' Plots the coefficient of variation (CV) for gene expression over the region of interest 
+#'
+#' @param cvExpr
+#' @usage plotcvExpr(cvExpr)
+#' @return Returns a barplot showing the CV for each gene identifier over the region of interest.
+#' @import ggplot2
+#' @author Benjamin Mayne
+#' @export
 
 plotcvExpr <- function(cvExpr){
-  
-  library(ggplot2)
   
   datPlot <- data.frame(Gene = names(cvExpr[[1]]), CV = cvExpr[[1]])
   
