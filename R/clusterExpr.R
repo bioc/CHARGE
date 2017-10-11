@@ -1,7 +1,19 @@
+#' clusterExpr 
+#'
+#' Performs a bimodal test using the genes within the region of interest.
+#'
+#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param cvExprA The output from cvExpr.
+#' @param threshold Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.
+#' @usage clusterExpr(se, cvExpr, threshold = NULL)
+#' @return Returns a SummarizedExperiment containing the original inputted se, but where an additional column labelled Ploidy has been added into the meta data containing the classification of each sample.
+#' @import SummarizedExperiment
+#' @import modes
+#' @import stats
+#' @author Benjamin Mayne
+#' @export
 
 clusterExpr <- function(se, cvExpr, threshold = NULL){
-  
-  library(SummarizedExperiment)
   
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
@@ -21,7 +33,7 @@ clusterExpr <- function(se, cvExpr, threshold = NULL){
   ### Subset se for genes 
   datCounts <- assay(se)[genes, ]
   
-  ### Perform a k-means clustering using two clusters (euploidy vs aneuploidy) 
+  ### Perform a k-means clustering using two clusters 
   kmeans.Out <- kmeans(x = t(datCounts), centers = 2)
   
   ### Next determine the mean level of expression of each cluster
@@ -49,4 +61,3 @@ clusterExpr <- function(se, cvExpr, threshold = NULL){
   return(se)
   
 }
-  
