@@ -22,9 +22,14 @@ cvExpr <- function(se, region){
     stop("se must be a RangedSummarizedExperiment")
   }
   
-  ### Subset se for genes on the chromosome of interest 
-  datCounts <- assay(se[seqnames(se) == chr])
+  #### region must be a GRanges object
+  if(!is(region, "GRanges")){
+    stop("region must be a GRanges")
+  }
   
+  ### Subset se for genes over the region of interest
+  datCounts <- assay(subsetByOverlaps(se, region))
+
   ### Determine the coefficient of variation (CV) for gene expression from the chromosome of interest
   #### Firstly calculate the the standard deviation of each gene
   geneSds <- rowSds(datCounts)
