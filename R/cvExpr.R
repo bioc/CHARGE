@@ -1,5 +1,17 @@
+#' cvExpr
+#'
+#' Determines the coefficient of variation (CV) for gene expression 
+#'
+#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param region A GRanges object containing the genomic location of the region of interest. This can either be an entire length or the subset of a chromosome.
+#' @usage cvExpr(se, region)
+#' @return Returns a list containing the CV of each gene and the the quantile threshold of the data.
+#' @import SummarizedExperiment
+#' @import matrixStats
+#' @author Benjamin Mayne
+#' @export
 
-cvExpr <- function(se, chr){
+cvExpr <- function(se, region){
   
   library(SummarizedExperiment)
   library(matrixStats)
