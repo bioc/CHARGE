@@ -1,19 +1,20 @@
-#' pcaExprs 
+#' cvExpr
 #'
 #' Determines the coefficient of variation (CV) for gene expression 
 #'
-#' @param se A SummarizedExperiment containing the gene expression data and the clustering output from clusterExpr.
-#' @param cvExprA The output from cvExpr.
-#' @param threshold Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.
-#' @usage pcaExprs(se, cvExpr, threshold = NULL)
-#' @return Returns a PCA plot showing the seperation of samples that were labelled hyperploidy or hypoploidy in clusterExpr.
+#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param region A GRanges object containing the genomic location of the region of interest. This can either be an entire length or the subset of a chromosome.
+#' @usage cvExpr(se, region)
+#' @return Returns a list containing the CV of each gene and the the quantile threshold of the data.
 #' @import SummarizedExperiment
-#' @import factoextra
-#' @import FactoMineR
+#' @import matrixStats
 #' @author Benjamin Mayne
 #' @export
 
-pcaExpr <- function(se, cvExpr, threshold = NULL){
+cvExpr <- function(se, region){
+  
+  library(SummarizedExperiment)
+  library(matrixStats)
   
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
@@ -21,28 +22,25 @@ pcaExpr <- function(se, cvExpr, threshold = NULL){
     stop("se must be a RangedSummarizedExperiment")
   }
   
-  ### Subset genes from the cvExpr using the input from threshold
-  if(is.null(threshold)){
-    #### Use all the gene in the analysis if threshold = NULL 
-    genes <- names(cvExpr[[1]])
-  } else {
-    #### Subset the genes based on defined quantile threshold
-    genes <- names(which(cvExpr[[1]] > cvExpr[[2]][threshold]))
-  }
+  ### Subset se for genes on the chromosome of interest 
+  datCounts <- assay(se[seqnames(se) == chr])
   
-  ### Subset se for genes 
-  datCounts <- data.frame(t(assay(se)[genes, ]))
+  ### Determine the coefficient of variation (CV) for gene expression from the chromosome of interest
+  #### Firstly calculate the the standard deviation of each gene
+  geneSds <- rowSds(datCounts)
   
-  ### Transform datCounts into a matrix with a column containing the clustering IDs
-  ### In order to run the pca
-  datCounts$Group <- colData(se)$Ploidy
-  gpCol = which(colnames(datCounts) == "Group")
+  #### Calucalte the mean of each gene
+  geneMeans <- rowMeans(datCounts)
   
-  ## Run the pca
-  pca <- PCA(datCounts, quali.sup=gpCol, graph = FALSE)
+  #### Determine CV = 100*sd/mean
+  geneCV <- 100*geneSds/geneMeans
   
-  ### Output the plot 
-  fviz_pca_ind(X = pca, label="none", habillage=factor(colData(se)$Ploidy), title="",
-               addEllipses=TRUE, ellipse.level=0.5)
-
+  ### Determine the genes quantiles 
+  CVQuantiles <- quantile(geneCV)
+  
+  ### Return the gene's CV and the quantiles to be inputted into the next function
+  ### which will determine what genes to be used for clustering
+  return(list(ExpressionCV = geneCV, Quantile_Threshold = CVQuantiles))
+  
+  
 }
