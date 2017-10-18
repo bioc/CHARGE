@@ -1,87 +1,127 @@
 ### Sliding windows test to find additions or deletions ###
 
 library(SummarizedExperiment)
-library(EnsDb.Hsapiens.v86)
 library(parallel)
 library(plyr)
 library(matrixStats)
 
-load("/home/SAHMRI.INTERNAL/benjamin.mayne/Bioconductor_Package/SRA/Counts/GSE55504_se.Rdata")
+exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
 
-bins <- tileGenome(seqinfo(EnsDb.Hsapiens.v86), tilewidth=100000, cut.last.tile.in.chrom = T)
+  ### Unit tests to see if the inputted data is in the correct format
+  #### se must be a RangedSummarizedExperiment
+  if(!is(se, "RangedSummarizedExperiment")){
+    stop("se must be a RangedSummarizedExperiment")
+  }
 
+  #### seqInfo must be a Seqinfo object containing the genomic lengths
+  if(!is(seqInfo, "Seqinfo")){
+    stop("seqInfo must be a Seqinfo object containing the genomic lengths of the chromosomes")
+  }
 
-    
-bimodalBin <- function(bin, se, threshold = NULL){
-  
-  ### Firstly subset se for the bin ###
-  datExpr <- suppressWarnings(assay(subsetByOverlaps(se, bin)))
-  
-  ### If threshold is not set to NULL remove genes with low variance 
-  if(!is.null(threshold)){
-    
-    ### Simialr to cvExpr calculate the standard deviations and means of each gene within the bin
-    ### and determine the expression variation
-    geneSds <- rowSds(datExpr)
-    
-    #### Calucalte the mean of each gene
-    geneMeans <- rowMeans(datExpr)
-    
-    #### Calucalte CV = 100*sd/mean
-    geneCV <- 100*geneSds/geneMeans
-    
-    ### Determine the genes quantiles 
-    CVQuantiles <- quantile(geneCV)
-    
-    ## Subset the genes with a variation threshold greater than the input value from datExpr
-    genes <- names(which(geneCV > CVQuantiles[threshold]))
-    datExpr <- data.frame(datExpr)[genes,]
+  #### binWidth must be a numeric
+  if(!is(binWidth, "numeric")){
+    stop("binWidth must be a numeric value")
   }
   
-  #### Calulate the mean z score for each sample using the genes within the bin
-  datZscores <- scale(x = datExpr)
-  ZscoreMeans <- rowMeans(x = datZscores) 
+  #### threshold must be an integer and either a value between and including 1 and 4
+  #### It can also be left as NULL which is the default value
+  if(!(is(threshold, "integer") || is.null(threshold))){
+    stop("threshold must be an integer up the the value of 4 or NULL (Default)")
+  }
+  if(!threshold %in% 1:4){
+    stop("threshold must be an integer up the the value of 4 or NULL (Default)")
+  }
+  
+  ### Threads must be a numeric value 
+  if(!is(threads, "numeric")){
+    stop("threads must be a numeric value")
+  }
+      
 
-  ### If statement to end the function if there are not enough genes to compute the Z scores
-  if(nrow(datExpr) == 0 || any(is.nan(ZscoreMeans))){
+  ### The function bimodalBin is used to take the genes within each bin and test for bimodality
+  ### If there are no genes found to be within the bin or not enough to compute Z scores then the
+  ### function will return NAs for the bimodality test
+  ### The output is a data frame containing the bin genomic location and the output from the bimodality and dip test
+  bimodalBin <- function(bin, se, threshold){
     
+    ### Firstly subset se for the bin ###
+    datExpr <- suppressWarnings(assay(subsetByOverlaps(se, bin)))
+    
+    ### If threshold is not set to NULL remove genes with low variance 
+    if(!is.null(threshold)){
+      
+      ### Similar to cvExpr calculate the standard deviations and means of each gene within the bin
+      ### and determine the expression variation
+      geneSds <- rowSds(datExpr)
+      
+      #### Calucalte the mean of each gene
+      geneMeans <- rowMeans(datExpr)
+      
+      #### Calucalte CV = 100*sd/mean
+      geneCV <- 100*geneSds/geneMeans
+      
+      ### Determine the genes quantiles 
+      CVQuantiles <- quantile(geneCV)
+      
+      ## Subset the genes with a variation threshold greater than the input value from datExpr
+      genes <- names(which(geneCV > CVQuantiles[threshold]))
+      datExpr <- data.frame(datExpr)[genes,]
+    }
+    
+    #### Calulate the mean z score for each sample using the genes within the bin
+    datZscores <- scale(x = datExpr)
+    ZscoreMeans <- rowMeans(x = datZscores) 
+  
+    ### If statement to end the function if there are not enough genes to compute the Z scores
+    if(nrow(datExpr) == 0 || any(is.nan(ZscoreMeans))){
+      
+      datResult <- data.frame(bin)
+      datResult$Bimodality.Amplitude <- NA
+      datResult$Bimodality.Coefficient <- NA
+      datResult$Bimodality.Ratio <- NA
+      datResult$Dip.Statistic <- NA
+      return(datResult)
+      
+    }
+    
+    ### Calcualte the biomodal amplitude, coeffeicent, ratio and dip test stat and return them with the bin
+    bimod_amp <- as.numeric(suppressWarnings(bimodality_amplitude(ZscoreMeans, fig = FALSE)))
+    bimod_coef <- as.numeric(suppressWarnings(bimodality_coefficient(t(datExpr))))
+    bimod_ratio <- as.numeric(suppressWarnings(bimodality_ratio(x = ZscoreMeans, fig = FALSE)))
+    dipResult <- as.numeric(dip.test(x = ZscoreMeans)["statistic"])
+    
+    ### If there were not enough genes within datExpr the bimodal test may not work
+    ### Use the if else statement to return NA if the bimodal test failed
     datResult <- data.frame(bin)
-    datResult$Bimodality.Amplitude <- NA
-    datResult$Bimodality.Coefficient <- NA
-    datResult$Bimodality.Ratio <- NA
-    datResult$Dip.Statistic <- NA
+    datResult$Bimodality.Amplitude <- ifelse(test = length(bimod_amp) == 0, yes = NA, no = bimod_amp)
+    datResult$Bimodality.Coefficient <- ifelse(test = length(bimod_coef) == 0, yes = NA, no = bimod_coef)
+    datResult$Bimodality.Ratio <- ifelse(test = length(bimod_ratio) == 0, yes = NA, no = bimod_ratio)
+    datResult$Dip.Statistic <- ifelse(test = length(dipResult) == 0, yes = NA, no = dipResult)
     return(datResult)
     
   }
+
+  ### Divide the genome up into the binWidths size
+  bins <- tileGenome(seqinfo(EnsDb.Hsapiens.v86), tilewidth=binWidth, cut.last.tile.in.chrom = TRUE)
   
-  ### Calcualte the biomodal amplitude, coeffeicent, ratio and dip test stat and return them with the bin
-  bimod_amp <- as.numeric(suppressWarnings(bimodality_amplitude(ZscoreMeans, fig = FALSE)))
-  bimod_coef <- as.numeric(suppressWarnings(bimodality_coefficient(t(datExpr))))
-  bimod_ratio <- as.numeric(suppressWarnings(bimodality_ratio(x = ZscoreMeans, fig = FALSE)))
-  dipResult <- as.numeric(dip.test(x = ZscoreMeans)["statistic"])
+  ### Use the bimodalBin function on every bin
+  ### mclapply can be used to make use of multiple cores (if possible)
+  bimodalBinOut <- mclapply(X = bins, se = se, threshold = threshold, FUN = bimodalBin, mc.cores = threads)
   
-  ### If there were not enough genes within datExpr the bimodal test may not work
-  ### Use the if else statement to return NA if the bimodal test failed
-  datResult <- data.frame(bin)
-  datResult$Bimodality.Amplitude <- ifelse(test = length(bimod_amp) == 0, yes = NA, no = bimod_amp)
-  datResult$Bimodality.Coefficient <- ifelse(test = length(bimod_coef) == 0, yes = NA, no = bimod_coef)
-  datResult$Bimodality.Ratio <- ifelse(test = length(bimod_ratio) == 0, yes = NA, no = bimod_ratio)
-  datResult$Dip.Statistic <- ifelse(test = length(dipResult) == 0, yes = NA, no = dipResult)
-  return(datResult)
-  
+  ### unlist bimodalBinOut into a singel data frame and return it 
+  bimodalBinOut <- ldply(bimodalBinOut)
+  return(bimodalBinOut)
   
 }
 
-dat <- mclapply(X = bins, se = se, threshold = 4, FUN=bimodalBin, mc.cores=8)
-dat <- ldply(dat)
 
-dat <- dat[which(dat$Dip.Statistic > 0.08),]
+#-----------------------------------------------------------------------------------
 
-bimodalBin(bin = bins[150], se = se, threshold = 4)
+binWidth = 10000000
+library(EnsDb.Hsapiens.v86)
+load("/home/SAHMRI.INTERNAL/benjamin.mayne/Bioconductor_Package/SRA/Counts/GSE55504_se.Rdata")
 
-
-
-
+exprFinder(se = se, seqInfo = seqinfo(EnsDb.Hsapiens.v86), binWidth = binWidth, threshold = 4L, threads = 1)
 
 
 
