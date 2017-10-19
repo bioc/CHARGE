@@ -1,9 +1,21 @@
-### Sliding windows test to find additions or deletions ###
-
-library(SummarizedExperiment)
-library(parallel)
-library(plyr)
-library(matrixStats)
+#' exprFinder 
+#'
+#' Performs a bimodality test at multiple defined bin sizes across the genome.
+#'
+#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param seqInfo A SeqInfo object containing the lengths of the chromosomes.
+#' @param binWidth The length of each bin.
+#' @param threshold Optional. The quantile threshold of expression variation of genes to be used at each bin. Default is NULL.
+#' @param threads Total number of threads to be used. Default is 1.
+#' @usage exprFinder(se, seqInfo, binWidth, threshold, threads)
+#' @return Returns a data frame containing the genomic locations of each bin with bimodality statistics.
+#' @import SummarizedExperiment
+#' @import modes
+#' @import matrixStats
+#' @import parallel
+#' @import plyr
+#' @author Benjamin Mayne
+#' @export
 
 exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
 
@@ -113,18 +125,3 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
   return(bimodalBinOut)
   
 }
-
-
-#-----------------------------------------------------------------------------------
-
-binWidth = 10000000
-library(EnsDb.Hsapiens.v86)
-load("/home/SAHMRI.INTERNAL/benjamin.mayne/Bioconductor_Package/SRA/Counts/GSE55504_se.Rdata")
-
-exprFinder(se = se, seqInfo = seqinfo(EnsDb.Hsapiens.v86), binWidth = binWidth, threshold = 4L, threads = 1)
-
-
-
-
-
-

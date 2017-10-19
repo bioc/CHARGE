@@ -2,7 +2,7 @@
 #'
 #' Plots the coefficient of variation (CV) for gene expression over the region of interest 
 #'
-#' @param cvExpr
+#' @param cvExpr The output from cvExpr function.
 #' @usage plotcvExpr(cvExpr)
 #' @return Returns a barplot showing the CV for each gene identifier over the region of interest.
 #' @import ggplot2

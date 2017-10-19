@@ -9,7 +9,7 @@
 #' @return Returns a SummarizedExperiment containing the original inputted se, but where an additional column labelled Ploidy has been added into the meta data containing the classification of each sample.
 #' @import SummarizedExperiment
 #' @import modes
-#' @import stats
+#' @import cluster
 #' @author Benjamin Mayne
 #' @export
 
@@ -34,15 +34,15 @@ clusterExpr <- function(se, cvExpr, threshold = NULL){
   datCounts <- assay(se)[genes, ]
   
   ### Perform a k-means clustering using two clusters 
-  kmeans.Out <- kmeans(x = t(datCounts), centers = 2)
+  pam.out <- pam(x=t(datCounts), k=2)
   
   ### Next determine the mean level of expression of each cluster
-  Cluster1_Mean <- mean(colMeans(datCounts[ ,which(kmeans.Out$cluster == 1)]))
-  Cluster2_Mean <- mean(colMeans(datCounts[ ,which(kmeans.Out$cluster == 2)]))
+  Cluster1_Mean <- mean(colMeans(datCounts[ ,which(pam.out$clustering == 1)]))
+  Cluster2_Mean <- mean(colMeans(datCounts[ ,which(pam.out$clustering == 2)]))
   
   ### Extract the clustering labels for each sample and assign if ploidy state with respect to the other sample
   ### based on the clustering means
-  pd <- data.frame(kmeans.Out$cluster)
+  pd <- data.frame(pam.out$clustering)
   colnames(pd) <- "Ploidy"
   
     if(Cluster1_Mean > Cluster2_Mean){

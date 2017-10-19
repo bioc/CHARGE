@@ -1,6 +1,6 @@
 #' bimodalTest
 #'
-#' Performs a bimodal 
+#' Performs a bimodal test over a genomic region of interest
 #'
 #' @param se A SummarizedExperiment containing the gene expression data.
 #' @param cvExprA The output from cvExpr.
