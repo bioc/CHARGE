@@ -6,6 +6,9 @@
 \usage{
 plotcvExpr(cvExpr)
 }
+\arguments{
+\item{cvExpr}{The output from cvExpr function.}
+}
 \value{
 Returns a barplot showing the CV for each gene identifier over the region of interest.
 }

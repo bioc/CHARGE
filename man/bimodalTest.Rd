@@ -17,7 +17,7 @@ bimodalTest(se, cvExpr, threshold = NULL)
 Returns a list containing the output from the bimodal test.
 }
 \description{
-Performs a bimodal
+Performs a bimodal test over a genomic region of interest
 }
 \author{
 Benjamin Mayne
