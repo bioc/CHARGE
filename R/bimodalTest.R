@@ -9,6 +9,7 @@
 #' @return Returns a list containing the output from the bimodal test.
 #' @import SummarizedExperiment
 #' @import modes
+#' @import diptest
 #' @author Benjamin Mayne
 #' @export
 
@@ -45,11 +46,16 @@ bimodalTest <- function(se, cvExpr, threshold = NULL){
   bimod_coef <- bimodality_coefficient(t(datCounts))
   bimod_ratio <- bimodality_ratio(x = ZscoreMeans, fig = FALSE)
   
+  ### Dip statistic test
+  dipResult <- dip.test(x = ZscoreMeans)
+
   ### Group the output into a list to return to the user
   bimodalTestOut <- list("Bimodality.Amplitude" = bimod_amp,
                          "Bimodality.Coefficient" = bimod_coef, 
                          "Bimodality.Ratio" = bimod_ratio,
+                         "Dip.Statistic" = as.numeric(dipResult["statistic"]),
                          "Density.Plot" = datZdensity)
+  
   return(bimodalTestOut)
   
-}  
+} 
