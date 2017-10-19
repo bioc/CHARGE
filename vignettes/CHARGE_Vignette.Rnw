@@ -1,0 +1,165 @@
+
+\documentclass{article}
+
+\usepackage{natbib}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage{hyperref}
+
+% \VignetteIndexEntry{CHARGE_Example}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\title{CHARGE: CHromosome Assessment in R with Gene Expression}
+\author{Benjamin Mayne}
+\maketitle
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+
+Chromosomal duplications, additions and deletions are important clinically as they may result in the manifest of different diseases and disorders. For example, several trisomy disorders exist including Trisomy 13, 18 and 21 where individuals have three copies of chromsome 13, 18 and 21 respectively. In addition, chromosomal duplications in cancer can be a common mutation which can result in the over expression of duplicated genes. Furthermore, the opposite can occur where there is a loss of a genomic region possibly resulting in the loss of gene expression. 
+Detection of these duplications, additions and deletions can be done using clustering methods from gene expression data. CHARGE is a package that is able to identify genomic regions including whole chromosomes that have either been duplicated or deleted. Using a bimodality test it can determine the likelihood of there being two distinct groups from gene expression data. For example, it can be used to identify samples with Trisomy 21 from euploid individuals. This vignette contains a tutorial using a publicly available data set (GSE55504) containing 16 fibroblast samples from indivduals with and without Trisomy 21.
+
+\section{Loading the data}
+
+CHARGE works primarily with SummarizedExperiment objects, which is a class of objects containing the experimental, meta and genomic location data all in one. Here, in this example, the experimental data is normalised gene expression data from a RNA-seq data set. The data was mapped to GRCh37 genome, normalised using edgeR cpm function and contains 16 samples. The data can be loaded into the R envirnoment from the CHARGE package.
+
+<<load the gene expression data>>=
+library(CHARGE)
+library(SummarizedExperiment)
+library(EnsDb.Hsapiens.v86)
+data(datExprs)
+datExprs
+colData(datExprs)
+@
+
+The gene expression data contains 16 samples where half of the samples have been classified with Trisomy 21. This tutorial will test how well CHARGE can correctly identify the Trisomy samples.
+
+\section{Expression variation}
+
+The first step in using CHARGE is to remove genes with a low expression variation over the region of interest. In this example, genes on chromosome 21 with a low expression variation will be removed from the analysis. Gene with a low expression variation can prevent distinct clustering. The cvExpr function calcualtes the Coefficient of Variation (CV) of each gene over a defined region. The input is the SummarizedExperiment, datExpr and a GRanges object containing the region of interest. Here, te length of chromosome 21 will be used as a GRanges object.
+
+<<subset for genes on chromosome 21>>=
+chr21 <- seqlengths(EnsDb.Hsapiens.v86)["21"]
+chr21Ranges <- GRanges(paste(21, paste(1, chr21, sep = "-"), sep = ":"))
+cvExpr.out <- cvExpr(se = datExprs, region = chr21Ranges)
+@
+
+
+The CV of the genes can be visualised using the function plotcvExpr, which take the output from cvExpr. This will produce a barplot containing the CV for each gene. The user then has the option of removing genes below a specified quantile CV. Once a threshold has been determined clustering analysis can be performed.
+ 
+<<plot the CV of gene expression>>=
+plotcvExpr(cvExpr = cvExpr.out)
+@
+
+
+\setkeys{Gin}{width=1\linewidth}
+\begin{figure}
+\begin{center}
+<<label=fig1, fig=TRUE, echo=FALSE, eps=FALSE, >>=
+plotcvExpr(cvExpr = cvExpr.out)
+@
+\end{center}
+\caption{The expression variation of chromosome 21 genes found to be expressed in the data set.}
+\label{fig:fig1}
+\end{figure}
+\clearpage
+
+\section{Clustering analysis}
+
+The next step is to perform a clustering analysis using the genes
+<<plot the CV of gene expression>>=
+datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out, threshold = 1)
+@
+
+
+
+
+<<plot the pca of clustering>>=
+pcaExpr(se = datExprs, cvExpr = cvExpr.out, threshold = 1)
+@
+
+
+\setkeys{Gin}{width=1\linewidth}
+\begin{figure}
+\begin{center}
+<<label=fig2, fig=TRUE, echo=FALSE, eps=FALSE, >>=
+pcaExpr(se = datExprs, cvExpr = cvExpr.out, threshold = 1)
+@
+\end{center}
+\caption{The expression variation of chromosome 21 genes found to be expressed in the data set.}
+\label{fig:fig2}
+\end{figure}
+\clearpage
+
+
+
+
+
+\section{Bimodal Test}
+
+The CHARGE package also contains a wrapper funtion to determine 
+
+
+
+
+
+
+<<bimodal test>>=
+bimodalTest.out <- bimodalTest(se = datExprs, cvExpr = cvExpr.out, threshold = 1)
+@
+
+
+<<plot the density plot of Z scores>>=
+plot(bimodalTest.out[[5]])
+@
+\setkeys{Gin}{width=1\linewidth}
+\begin{figure}
+\begin{center}
+<<label=fig3, fig=TRUE, echo=FALSE, eps=FALSE, >>=
+plot(bimodalTest.out[[5]])
+@
+\end{center}
+\caption{Densiy plot of mean Z scores.}
+\label{fig:fig3}
+\end{figure}
+\clearpage
+
+\section{Expression Finder}
+
+
+<<Expression Finder>>=
+exprFinder(se = datExprs, seqInfo = seqinfo(EnsDb.Hsapiens.v86), binWidth = 10000000, threshold = 1L)
+@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Session Information}
+This analysis was conducted on:
+<<annotation>>=
+sessionInfo()
+@
+
+\section{References}
+\paragraph{} \hspace{0pt} \\
+Zhou X, Lindsay H, Robinson MD (2014). Robustly detecting differential expression in RNA sequencing data using observation weights. Nucleic Acids Research, 42(11), e91.
+
+\end{document}
