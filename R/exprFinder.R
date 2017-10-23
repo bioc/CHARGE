@@ -34,16 +34,7 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
   if(!is(binWidth, "numeric")){
     stop("binWidth must be a numeric value")
   }
-  
-  #### threshold must be an integer and either a value between and including 1 and 4
-  #### It can also be left as NULL which is the default value
-  if(!(is(threshold, "integer") || is.null(threshold))){
-    stop("threshold must be an integer up the the value of 4 or NULL (Default)")
-  }
-  if(!threshold %in% 1:4){
-    stop("threshold must be an integer up the the value of 4 or NULL (Default)")
-  }
-  
+
   ### Threads must be a numeric value 
   if(!is(threads, "numeric")){
     stop("threads must be a numeric value")
