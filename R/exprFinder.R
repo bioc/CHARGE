@@ -18,29 +18,29 @@
 #' @export
 
 exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
-
+  
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
   if(!is(se, "RangedSummarizedExperiment")){
     stop("se must be a RangedSummarizedExperiment")
   }
-
+  
   #### seqInfo must be a Seqinfo object containing the genomic lengths
   if(!is(seqInfo, "Seqinfo")){
     stop("seqInfo must be a Seqinfo object containing the genomic lengths of the chromosomes")
   }
-
+  
   #### binWidth must be a numeric
   if(!is(binWidth, "numeric")){
     stop("binWidth must be a numeric value")
   }
-
+  
   ### Threads must be a numeric value 
   if(!is(threads, "numeric")){
     stop("threads must be a numeric value")
   }
-      
-
+  
+  
   ### The function bimodalBin is used to take the genes within each bin and test for bimodality
   ### If there are no genes found to be within the bin or not enough to compute Z scores then the
   ### function will return NAs for the bimodality test
@@ -74,7 +74,7 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
     #### Calulate the mean z score for each sample using the genes within the bin
     datZscores <- scale(x = datExpr)
     ZscoreMeans <- rowMeans(x = datZscores) 
-  
+    
     ### If statement to end the function if there are not enough genes to compute the Z scores
     if(nrow(datExpr) == 0 || any(is.nan(ZscoreMeans))){
       
@@ -103,9 +103,9 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
     return(datResult)
     
   }
-
+  
   ### Divide the genome up into the binWidths size
-  bins <- tileGenome(seqinfo(EnsDb.Hsapiens.v86), tilewidth=binWidth, cut.last.tile.in.chrom = TRUE)
+  bins <- tileGenome(seqInfo, tilewidth=binWidth, cut.last.tile.in.chrom = TRUE)
   
   ### Use the bimodalBin function on every bin
   ### mclapply can be used to make use of multiple cores (if possible)
@@ -113,6 +113,7 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
   
   ### unlist bimodalBinOut into a singel data frame and return it 
   bimodalBinOut <- ldply(bimodalBinOut)
+  bimodalBinOut <- bimodalBinOut[order(bimodalBinOut$Dip.Statistic, decreasing = TRUE),]
   return(bimodalBinOut)
   
 }
