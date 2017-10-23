@@ -71,7 +71,10 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
       datExpr <- data.frame(datExpr)[genes,]
     }
     
-    ### Tranpsoe the data frame
+    ### Get the gene count ###
+    geneCount <- nrow(datExpr)
+    
+    ### Tranpose the data frame
     datExpr <- data.frame(t(datExpr))
     
     #### Calulate the mean z score for each sample using the genes within the bin
@@ -103,6 +106,7 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
     datResult$Bimodality.Coefficient <- ifelse(test = length(bimod_coef) == 0, yes = NA, no = bimod_coef)
     datResult$Bimodality.Ratio <- ifelse(test = length(bimod_ratio) == 0, yes = NA, no = bimod_ratio)
     datResult$Dip.Statistic <- ifelse(test = length(dipResult) == 0, yes = NA, no = dipResult)
+    datResult$No.Genes <- geneCount
     return(datResult)
     
   }

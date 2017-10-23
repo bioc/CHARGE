@@ -31,14 +31,14 @@ clusterExpr <- function(se, cvExpr, threshold = NULL){
   }
   
   ### Subset se for genes 
-  datCounts <- assay(se)[genes, ]
+  datExpr <- data.frame(assay(se))[genes, ]
   
   ### Perform a k-means clustering using two clusters 
-  pam.out <- pam(x=t(datCounts), k=2)
+  pam.out <- pam(x=t(datExpr), k=2)
   
   ### Next determine the mean level of expression of each cluster
-  Cluster1_Mean <- mean(colMeans(datCounts[ ,which(pam.out$clustering == 1)]))
-  Cluster2_Mean <- mean(colMeans(datCounts[ ,which(pam.out$clustering == 2)]))
+  Cluster1_Mean <- mean(colMeans(datExpr[ ,which(pam.out$clustering == 1)]))
+  Cluster2_Mean <- mean(colMeans(datExpr[ ,which(pam.out$clustering == 2)]))
   
   ### Extract the clustering labels for each sample and assign if ploidy state with respect to the other sample
   ### based on the clustering means

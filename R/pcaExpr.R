@@ -31,18 +31,19 @@ pcaExpr <- function(se, cvExpr, threshold = NULL){
   }
   
   ### Subset se for genes 
-  datCounts <- data.frame(t(assay(se)[genes, ]))
-  
-  ### Transform datCounts into a matrix with a column containing the clustering IDs
+  datExpr <- data.frame(assay(se))[genes, ]  
+  datExpr <- data.frame(t(datExpr))
+
+  ### Transform datExpr into a matrix with a column containing the clustering IDs
   ### In order to run the pca
-  datCounts$Group <- colData(se)$Ploidy
-  gpCol = which(colnames(datCounts) == "Group")
+  datExpr$Group <- colData(se)$Ploidy
+  gpCol = which(colnames(datExpr) == "Group")
   
   ## Run the pca
-  pca <- PCA(datCounts, quali.sup=gpCol, graph = FALSE)
+  pca <- PCA(datExpr, quali.sup=gpCol, graph = FALSE)
   
   ### Output the plot 
   fviz_pca_ind(X = pca, label="none", habillage=factor(colData(se)$Ploidy), title="",
-               addEllipses=TRUE, ellipse.level=0.5)
+               addEllipses=TRUE, ellipse.level=0.95)
 
 }

@@ -31,10 +31,11 @@ bimodalTest <- function(se, cvExpr, threshold = NULL){
   }
   
   ### Subset se for genes 
-  datCounts <- data.frame(t(assay(se)[genes, ]))
+  datExpr <- data.frame(assay(se))[genes, ]
+  datExpr <- data.frame(t(datExpr))
   
   #### Calulate the mean z score for each sample by calulating the z score for each gene in each sample
-  datZscores <- scale(x = datCounts)
+  datZscores <- scale(x = datExpr)
   ZscoreMeans <- rowMeans(x = datZscores) 
   datZdensity <- density(x = ZscoreMeans)
   
@@ -43,12 +44,12 @@ bimodalTest <- function(se, cvExpr, threshold = NULL){
   
   ### Calcualte the biomodal amplitude, coeffeicent and ratio
   bimod_amp <- bimodality_amplitude(ZscoreMeans, fig = FALSE)
-  bimod_coef <- bimodality_coefficient(t(datCounts))
+  bimod_coef <- bimodality_coefficient(t(datExpr))
   bimod_ratio <- bimodality_ratio(x = ZscoreMeans, fig = FALSE)
   
   ### Dip statistic test
   dipResult <- dip.test(x = ZscoreMeans)
-
+  
   ### Group the output into a list to return to the user
   bimodalTestOut <- list("Bimodality.Amplitude" = bimod_amp,
                          "Bimodality.Coefficient" = bimod_coef, 
