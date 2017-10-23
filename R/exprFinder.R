@@ -71,6 +71,9 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
       datExpr <- data.frame(datExpr)[genes,]
     }
     
+    ### Tranpsoe the data frame
+    datExpr <- data.frame(t(datExpr))
+    
     #### Calulate the mean z score for each sample using the genes within the bin
     datZscores <- scale(x = datExpr)
     ZscoreMeans <- rowMeans(x = datZscores) 
