@@ -121,6 +121,7 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
   ### unlist bimodalBinOut into a singel data frame and return it 
   bimodalBinOut <- ldply(bimodalBinOut)
   bimodalBinOut <- bimodalBinOut[order(bimodalBinOut$Dip.Statistic, decreasing = TRUE),]
+  row.names(bimodalBinOut) <- NULL
   return(bimodalBinOut)
   
 }
