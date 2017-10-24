@@ -17,17 +17,12 @@
 #' @author Benjamin Mayne
 #' @export
 
-exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
+exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads = 1){
   
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
   if(!is(se, "RangedSummarizedExperiment")){
     stop("se must be a RangedSummarizedExperiment")
-  }
-  
-  #### seqInfo must be a Seqinfo object containing the genomic lengths
-  if(!is(seqInfo, "Seqinfo")){
-    stop("seqInfo must be a Seqinfo object containing the genomic lengths of the chromosomes")
   }
   
   #### binWidth must be a numeric
@@ -111,8 +106,8 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
     
   }
   
-  ### Divide the genome up into the binWidths size
-  bins <- tileGenome(seqInfo, tilewidth=binWidth, cut.last.tile.in.chrom = TRUE)
+  ### Divide the genome up into bins using a sliding window
+  bins <- unlist(slidingWindows(x = ranges, width = binWidth, step = binStep))
   
   ### Use the bimodalBin function on every bin
   ### mclapply can be used to make use of multiple cores (if possible)
@@ -120,8 +115,27 @@ exprFinder <- function(se, seqInfo, binWidth, threshold = NULL, threads = 1){
   
   ### unlist bimodalBinOut into a singel data frame and return it 
   bimodalBinOut <- ldply(bimodalBinOut)
-  bimodalBinOut <- bimodalBinOut[order(bimodalBinOut$Dip.Statistic, decreasing = TRUE),]
+  
+  ### Determine region ranking ###
+  #### The region ranking is based on the Bimodality Coefficient and the number of genes within the region ####
+  rankRegion <- function(DipTest, NoGenes){
+    
+    DipTest = as.numeric(DipTest)
+    NoGenes = as.numeric(NoGenes)
+    
+    
+    rankValue =  DipTest * NoGenes
+    return(rankValue)
+    
+  }
+  
+  bimodalBinOut$Rank <- rankRegion(DipTest = bimodalBinOut$Dip.Statistic, NoGenes = bimodalBinOut$No.Genes)
+  
+  ### Reorder the data frame such that high rank regions are at the top ###
+  bimodalBinOut <- bimodalBinOut[order(bimodalBinOut$Rank, decreasing = TRUE),]
   row.names(bimodalBinOut) <- NULL
+  
+  
   return(bimodalBinOut)
   
 }
