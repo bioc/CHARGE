@@ -55,6 +55,7 @@ bimodalTest <- function(se, cvExpr, threshold = NULL){
                          "Bimodality.Coefficient" = bimod_coef, 
                          "Bimodality.Ratio" = bimod_ratio,
                          "Dip.Statistic" = as.numeric(dipResult["statistic"]),
+                         "Dip.Pvalue" = as.numeric(dipResult["p.value"]),
                          "Density.Plot" = datZdensity)
   
   return(bimodalTestOut)
