@@ -92,7 +92,8 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
     bimod_amp <- as.numeric(suppressWarnings(bimodality_amplitude(ZscoreMeans, fig = FALSE)))
     bimod_coef <- as.numeric(suppressWarnings(bimodality_coefficient(t(datExpr))))
     bimod_ratio <- as.numeric(suppressWarnings(bimodality_ratio(x = ZscoreMeans, fig = FALSE)))
-    dipResult <- as.numeric(dip.test(x = ZscoreMeans)["statistic"])
+    dipResultStat <- as.numeric(dip.test(x = ZscoreMeans)["statistic"])
+    dipResultPValue <- as.numeric(dip.test(x = ZscoreMeans)["p.value"])
     
     ### If there were not enough genes within datExpr the bimodal test may not work
     ### Use the if else statement to return NA if the bimodal test failed
@@ -100,7 +101,9 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
     datResult$Bimodality.Amplitude <- ifelse(test = length(bimod_amp) == 0, yes = NA, no = bimod_amp)
     datResult$Bimodality.Coefficient <- ifelse(test = length(bimod_coef) == 0, yes = NA, no = bimod_coef)
     datResult$Bimodality.Ratio <- ifelse(test = length(bimod_ratio) == 0, yes = NA, no = bimod_ratio)
-    datResult$Dip.Statistic <- ifelse(test = length(dipResult) == 0, yes = NA, no = dipResult)
+    datResult$Dip.Statistic <- ifelse(test = length(dipResultStat) == 0, yes = NA, no = dipResultStat)
+    datResult$Dip.pvalue <- ifelse(test = length(dipResultPValue) == 0, yes = NA, no = dipResultPValue)
+    
     datResult$No.Genes <- geneCount
     return(datResult)
     
@@ -115,27 +118,18 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
   
   ### unlist bimodalBinOut into a singel data frame and return it 
   bimodalBinOut <- ldply(bimodalBinOut)
+  #bimodalBinOut <- na.omit(bimodalBinOut)
   
-  ### Determine region ranking ###
-  #### The region ranking is based on the Bimodality Coefficient and the number of genes within the region ####
-  rankRegion <- function(DipTest, NoGenes){
-    
-    DipTest = as.numeric(DipTest)
-    NoGenes = as.numeric(NoGenes)
-    
-    
-    rankValue =  DipTest * NoGenes
-    return(rankValue)
-    
-  }
+  ### Next reduce bimodalBinOut to combine overlapping regions
+  bimodalBinReduced <- reduce(GRanges(bimodalBinOut))  
   
-  bimodalBinOut$Rank <- rankRegion(DipTest = bimodalBinOut$Dip.Statistic, NoGenes = bimodalBinOut$No.Genes)
+  bimodalBinReducedOut <- mclapply(X = bimodalBinReduced, se = se, threshold = threshold, FUN = bimodalBin, mc.cores = threads)
+  bimodalBinReducedOut <- ldply(bimodalBinReducedOut)
   
-  ### Reorder the data frame such that high rank regions are at the top ###
-  bimodalBinOut <- bimodalBinOut[order(bimodalBinOut$Rank, decreasing = TRUE),]
-  row.names(bimodalBinOut) <- NULL
+  ### Reorder the data frame such that low p values are the top ###
+  bimodalBinReducedOut <- bimodalBinReducedOut[order(bimodalBinReducedOut$Dip.pvalue, decreasing = FALSE),]
+  row.names(bimodalBinReducedOut) <- NULL
   
-  
-  return(bimodalBinOut)
+  return(bimodalBinReducedOut)
   
 }
