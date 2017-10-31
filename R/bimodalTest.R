@@ -43,7 +43,6 @@ bimodalTest <- function(se, cvExpr, threshold = NULL){
   datZdensity$call <- "Density plot of Z-scores from gene expression"
   
   ### Calcualte the biomodal amplitude, coeffeicent and ratio
-  bimod_amp <- bimodality_amplitude(ZscoreMeans, fig = FALSE)
   bimod_coef <- bimodality_coefficient(t(datExpr))
   bimod_ratio <- bimodality_ratio(x = ZscoreMeans, fig = FALSE)
   
@@ -51,8 +50,7 @@ bimodalTest <- function(se, cvExpr, threshold = NULL){
   dipResult <- dip.test(x = ZscoreMeans)
   
   ### Group the output into a list to return to the user
-  bimodalTestOut <- list("Bimodality.Amplitude" = bimod_amp,
-                         "Bimodality.Coefficient" = bimod_coef, 
+  bimodalTestOut <- list("Bimodality.Coefficient" = bimod_coef, 
                          "Bimodality.Ratio" = bimod_ratio,
                          "Dip.Statistic" = as.numeric(dipResult["statistic"]),
                          "Dip.Pvalue" = as.numeric(dipResult["p.value"]),
