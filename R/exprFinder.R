@@ -8,7 +8,7 @@
 #' @param threshold Optional. The quantile threshold of expression variation of genes to be used at each bin. Default is NULL.
 #' @param threads Total number of threads to be used. Default is 1.
 #' @usage exprFinder(se, seqInfo, binWidth, threshold, threads)
-#' @return Returns a data frame containing the genomic locations of each bin with bimodality statistics.
+#' @return Returns a data frame containing the genomic locations of each bin and bimodality statistics.
 #' @import SummarizedExperiment
 #' @import modes
 #' @import matrixStats
@@ -80,7 +80,6 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
     if(nrow(datExpr) == 0 || any(is.nan(ZscoreMeans))){
       
       datResult <- data.frame(bin)
-      datResult$Bimodality.Amplitude <- NA
       datResult$Bimodality.Coefficient <- NA
       datResult$Bimodality.Ratio <- NA
       datResult$Dip.Statistic <- NA
@@ -89,7 +88,6 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
     }
     
     ### Calcualte the biomodal amplitude, coeffeicent, ratio and dip test stat and return them with the bin
-    bimod_amp <- as.numeric(suppressWarnings(bimodality_amplitude(ZscoreMeans, fig = FALSE)))
     bimod_coef <- as.numeric(suppressWarnings(bimodality_coefficient(t(datExpr))))
     bimod_ratio <- as.numeric(suppressWarnings(bimodality_ratio(x = ZscoreMeans, fig = FALSE)))
     dipResultStat <- as.numeric(dip.test(x = ZscoreMeans)["statistic"])
@@ -98,7 +96,6 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
     ### If there were not enough genes within datExpr the bimodal test may not work
     ### Use the if else statement to return NA if the bimodal test failed
     datResult <- data.frame(bin)
-    datResult$Bimodality.Amplitude <- ifelse(test = length(bimod_amp) == 0, yes = NA, no = bimod_amp)
     datResult$Bimodality.Coefficient <- ifelse(test = length(bimod_coef) == 0, yes = NA, no = bimod_coef)
     datResult$Bimodality.Ratio <- ifelse(test = length(bimod_ratio) == 0, yes = NA, no = bimod_ratio)
     datResult$Dip.Statistic <- ifelse(test = length(dipResultStat) == 0, yes = NA, no = dipResultStat)
@@ -118,18 +115,19 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
   
   ### unlist bimodalBinOut into a singel data frame and return it 
   bimodalBinOut <- ldply(bimodalBinOut)
-  #bimodalBinOut <- na.omit(bimodalBinOut)
+  ### Remove regions that did not compute a p value
+  bimodalBinOut <- bimodalBinOut[complete.cases(bimodalBinOut$Dip.pvalue),]
   
-  ### Next reduce bimodalBinOut to combine overlapping regions
-  bimodalBinReduced <- reduce(GRanges(bimodalBinOut))  
+  ### Reduce bimodalBinOut to contain the regions that had the same genes 
+  bimodalBinReduced <- unlist(reduce(split(GRanges(bimodalBinOut), elementMetadata(GRanges(bimodalBinOut))$Dip.pvalue)))
   
-  bimodalBinReducedOut <- mclapply(X = bimodalBinReduced, se = se, threshold = threshold, FUN = bimodalBin, mc.cores = threads)
-  bimodalBinReducedOut <- ldply(bimodalBinReducedOut)
+  bimodalBinReduced <- cbind(data.frame(bimodalBinReduced), 
+                          bimodalBinOut[match(names(bimodalBinReduced), bimodalBinOut$Dip.pvalue), 6:10])
   
   ### Reorder the data frame such that low p values are the top ###
-  bimodalBinReducedOut <- bimodalBinReducedOut[order(bimodalBinReducedOut$Dip.pvalue, decreasing = FALSE),]
-  row.names(bimodalBinReducedOut) <- NULL
+  bimodalBinReduced <- bimodalBinReduced[order(bimodalBinReduced$Dip.pvalue, decreasing = FALSE), ]
+  row.names(bimodalBinReduced) <- NULL
   
-  return(bimodalBinReducedOut)
+  return(bimodalBinReduced)
   
 }
