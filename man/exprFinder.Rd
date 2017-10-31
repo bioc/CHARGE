@@ -9,16 +9,16 @@ exprFinder(se, seqInfo, binWidth, threshold, threads)
 \arguments{
 \item{se}{A SummarizedExperiment containing the gene expression data.}
 
-\item{seqInfo}{A SeqInfo object containing the lengths of the chromosomes.}
-
 \item{binWidth}{The length of each bin.}
 
 \item{threshold}{Optional. The quantile threshold of expression variation of genes to be used at each bin. Default is NULL.}
 
 \item{threads}{Total number of threads to be used. Default is 1.}
+
+\item{seqInfo}{A SeqInfo object containing the lengths of the chromosomes.}
 }
 \value{
-Returns a data frame containing the genomic locations of each bin with bimodality statistics.
+Returns a data frame containing the genomic locations of each bin and bimodality statistics.
 }
 \description{
 Performs a bimodality test at multiple defined bin sizes across the genome.
