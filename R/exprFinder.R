@@ -10,6 +10,7 @@
 #' @usage exprFinder(se, seqInfo, binWidth, threshold, threads)
 #' @return Returns a data frame containing the genomic locations of each bin and bimodality statistics.
 #' @import SummarizedExperiment
+#' @import GenomicRanges
 #' @import modes
 #' @import matrixStats
 #' @import parallel
