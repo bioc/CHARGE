@@ -7,9 +7,7 @@ Author: Benjamin Mayne
 Maintainer: Benjamin Mayne <benjamin.mayne@sahmri.com>
 Depends: R (>= 3.4.1)
 Imports: SummarizedExperiment, FactoMineR,  matrixStats, GenomicRanges, ggplot2, modes, parallel, plyr, cluster
-Suggests: roxygen2,
-    knitr,
-    rmarkdown
+Suggests: roxygen2, knitr, rmarkdown
 biocViews: GeneExpression, Clustering
 Description: Predicts samples with chromosomal additions or deletions. 
 License: GPL-2
