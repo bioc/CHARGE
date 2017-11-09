@@ -5,14 +5,13 @@ Version: 0.99.01
 Date: 2017-10-11
 Author: Benjamin Mayne
 Maintainer: Benjamin Mayne <benjamin.mayne@sahmri.com>
-Depends: R (>= 3.4.1)
-Imports: SummarizedExperiment, FactoMineR,  matrixStats, GenomicRanges, ggplot2, modes, parallel, plyr, cluster
-Suggests: roxygen2, knitr, rmarkdown
+Depends: R (>= 3.4.1), GenomicRanges, methods
+Imports: SummarizedExperiment, FactoMineR, factoextra, ggplot2, IRanges, graphics, modes, parallel, plyr, cluster, diptest, stats, matrixStats
+Suggests: roxygen2, EnsDb.Hsapiens.v86
 biocViews: GeneExpression, Clustering
-Description: Predicts samples with chromosomal additions or deletions. 
+Description: Identifies genomic duplications or deletions from gene expression data. 
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Collate: 'bimodalTest.R' 'CHARGE.R' 'clusterExpr.R' 'cvExpr.R' 'exprFinder.R' 'pcaExpr.R' 'plotcvExpr.R'
-VignetteBuilder: knitr
