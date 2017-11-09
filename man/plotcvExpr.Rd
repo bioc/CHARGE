@@ -13,7 +13,15 @@ plotcvExpr(cvExpr)
 Returns a barplot showing the CV for each gene identifier over the region of interest.
 }
 \description{
-Plots the coefficient of variation (CV) for gene expression over the region of interest
+Plots the coefficient of variation or expression variation for each gene over a defined genomic region.
+}
+\examples{
+library(CHARGE)
+library(GenomicRanges)
+data(datExprs)
+chr21 <- GRanges("21:1-46709983")
+cvExpr.out <- cvExpr(se = datExprs, region = chr21)
+plotcvExpr(cvExpr = cvExpr.out)
 }
 \author{
 Benjamin Mayne

@@ -15,7 +15,14 @@ cvExpr(se, region)
 Returns a list containing the CV of each gene and the the quantile threshold of the data.
 }
 \description{
-Determines the coefficient of variation (CV) for gene expression
+Calculates the coefficient of variation for each gene within a defined genomic region.
+}
+\examples{
+library(CHARGE)
+library(GenomicRanges)
+data(datExprs)
+chr21 <- GRanges("21:1-46709983")
+cvExpr.out <- cvExpr(se = datExprs, region = chr21)
 }
 \author{
 Benjamin Mayne

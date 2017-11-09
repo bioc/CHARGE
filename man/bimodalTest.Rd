@@ -9,15 +9,23 @@ bimodalTest(se, cvExpr, threshold = NULL)
 \arguments{
 \item{se}{A SummarizedExperiment containing the gene expression data.}
 
-\item{threshold}{Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.}
+\item{cvExpr}{The output from cvExpr.}
 
-\item{cvExprA}{The output from cvExpr.}
+\item{threshold}{Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.}
 }
 \value{
 Returns a list containing the output from the bimodal test.
 }
 \description{
-Performs a bimodal test over a genomic region of interest
+Performs a bimodal test over a genomic region of interest.
+}
+\examples{
+library(CHARGE)
+library(GenomicRanges)
+data(datExprs)
+chr21 <- GRanges("21:1-46709983")
+cvExpr.out <- cvExpr(se = datExprs, region = chr21)
+bimodalTest.out <- bimodalTest(se = datExprs, cvExpr = cvExpr.out, threshold = "25\%")
 }
 \author{
 Benjamin Mayne

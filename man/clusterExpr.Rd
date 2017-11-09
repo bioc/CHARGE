@@ -9,15 +9,24 @@ clusterExpr(se, cvExpr, threshold = NULL)
 \arguments{
 \item{se}{A SummarizedExperiment containing the gene expression data.}
 
-\item{threshold}{Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.}
+\item{cvExpr}{The output from cvExpr.}
 
-\item{cvExprA}{The output from cvExpr.}
+\item{threshold}{Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.}
 }
 \value{
 Returns a SummarizedExperiment containing the original inputted se, but where an additional column labelled Ploidy has been added into the meta data containing the classification of each sample.
 }
 \description{
-Performs a bimodal test using the genes within the region of interest.
+Performs a clustering analysis and predict which samples have an enrichment for a genomic region of interest.
+}
+\examples{
+library(CHARGE)
+library(GenomicRanges)
+data(datExprs)
+chr21 <- GRanges("21:1-46709983")
+cvExpr.out <- cvExpr(se = datExprs, region = chr21)
+datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25\%")
+colData(datExprs)$Ploidy
 }
 \author{
 Benjamin Mayne

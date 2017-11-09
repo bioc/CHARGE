@@ -4,20 +4,29 @@
 \alias{pcaExpr}
 \title{pcaExprs}
 \usage{
-pcaExprs(se, cvExpr, threshold = NULL)
+pcaExpr(se, cvExpr, threshold = NULL)
 }
 \arguments{
 \item{se}{A SummarizedExperiment containing the gene expression data and the clustering output from clusterExpr.}
 
-\item{threshold}{Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.}
+\item{cvExpr}{The output from cvExpr.}
 
-\item{cvExprA}{The output from cvExpr.}
+\item{threshold}{Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.}
 }
 \value{
 Returns a PCA plot showing the seperation of samples that were labelled hyperploidy or hypoploidy in clusterExpr.
 }
 \description{
-Determines the coefficient of variation (CV) for gene expression
+Creates a PCA plot using genes within a defined genomic region.
+}
+\examples{
+library(CHARGE)
+library(GenomicRanges)
+data(datExprs)
+chr21 <- GRanges("21:1-46709983")
+cvExpr.out <- cvExpr(se = datExprs, region = chr21)
+datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25\%")
+pcaExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25\%")
 }
 \author{
 Benjamin Mayne

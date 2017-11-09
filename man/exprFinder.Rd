@@ -4,24 +4,36 @@
 \alias{exprFinder}
 \title{exprFinder}
 \usage{
-exprFinder(se, seqInfo, binWidth, threshold, threads)
+exprFinder(se, ranges, binWidth, binStep, threshold = NULL, threads = 1)
 }
 \arguments{
 \item{se}{A SummarizedExperiment containing the gene expression data.}
 
+\item{ranges}{A GRanges object containing the genomic regions to scan.}
+
 \item{binWidth}{The length of each bin.}
+
+\item{binStep}{The distance the bin will slide.}
 
 \item{threshold}{Optional. The quantile threshold of expression variation of genes to be used at each bin. Default is NULL.}
 
 \item{threads}{Total number of threads to be used. Default is 1.}
-
-\item{seqInfo}{A SeqInfo object containing the lengths of the chromosomes.}
 }
 \value{
 Returns a data frame containing the genomic locations of each bin and bimodality statistics.
 }
 \description{
-Performs a bimodality test at multiple defined bin sizes across the genome.
+Performs a bimodality test at multiple defined bin sizes across the genome using a sliding window approach.
+}
+\examples{
+library(CHARGE)
+library(GenomicRanges)
+library(EnsDb.Hsapiens.v86)
+data(datExprs)
+chr21 <- GRanges("21:1-46709983")
+chrLengths <- GRanges(seqinfo(EnsDb.Hsapiens.v86)[c("21", "22", "Y")])
+exprFinder.out <- exprFinder(se = datExprs, ranges = chrLengths,
+binWidth = 1e+9, binStep = 1e+9, threshold = "25\%")
 }
 \author{
 Benjamin Mayne
