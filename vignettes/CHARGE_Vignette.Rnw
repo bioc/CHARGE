@@ -13,7 +13,7 @@
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
-\title{CHARGE: CHromosome Assessment in R with Gene Expression}
+\title{CHARGE: CHromosome Assessment in R with Gene Expression data}
 \author{Benjamin Mayne}
 \maketitle
 
@@ -23,15 +23,16 @@
 
 \section{Introduction}
 
-Chromosomal duplications, additions and deletions are important clinically as they may manifest into different diseases and disorders. For example, Trisomy 21, where individuals have three copies of chromosome 21 results in intellectual disability. In addition, in the field of cancer, chromosomal deletions can promote carcinogenesis. 
-Detection of either chromosomal addition or deletions from gene expression data can be done using clustering methods. CHARGE, can identify these genomic regions and whole chromosomes that have either been duplicated or deleted. Using Hartigan's Dip Test [1] and a bimodal test [2] the likelihood of there being two distinct groups for a given genomic region can be determined. This can be an informative measure to determine if a genomic region has either been duplicated or deleted in given set of samples. This vignette contains a tutorial to identify samples with and without Trisomy 21. The data set is from a publicly available data set (GSE55504) containing 16 fibroblast samples where half of the samples have Trisomy 21.
+Chromosomal duplications, additions and deletions are important clinically as they may manifest into different diseases and disorders. For example, Trisomy 21, where individuals have three copies of chromosome 21 results in intellectual disability. In addition, in the field of cancer, chromosomal deletions can promote carcinogenesis.
+Detection of either chromosomal duplications or deletions from gene expression data can be done using clustering methods. CHARGE, can identify these genomic regions and whole chromosomes that have either been duplicated or deleted. Using Hartigan's Dip Test [1] and a bimodal test [2] the likelihood of there being two distinct groups for a given genomic region can be determined. This can be an informative measure to determine if a genomic region has either been duplicated or deleted in given set of samples. This vignette contains a tutorial to identify samples with and without Trisomy 21. The data set is from a publicly available data set (GSE55504) containing 16 fibroblast samples from individuals with (n=8) and without Trisomy 21 (n=8).
 
 \section{Preparing the data}
 
-CHARGE works primarily with SummarizedExperiment objects, a class of data objects containing the experimental, meta and genomic location data all in one. Here, in this example, the experimental data is normalised gene expression data from the RNA-seq data set. The data was mapped to GRCh37 genome, normalised using edgeR’s cpm function [3] and contains 16 samples. The data can be loaded into the R environment from the CHARGE package.
+CHARGE works primarily with SummarizedExperiment objects [3], a class of data objects containing the experimental, meta and genomic location data all in one. Here, in this example, the experimental data is normalised gene expression data from the RNA-seq data set. The data was mapped to the human reference genome, normalised using edgeR [4] and contains 16 samples. The data can be loaded into the R environment from the CHARGE package as shown below.
 
 <<load the gene expression data>>=
 library(CHARGE)
+library(GenomicRanges)
 library(SummarizedExperiment)
 library(EnsDb.Hsapiens.v86)
 data(datExprs)
@@ -43,11 +44,11 @@ datExprs
 The first step in using CHARGE is to remove genes with a low expression variation over the region of interest. Genes that have a low variation between samples may not be useful for clustering analysis and can be filtered out of downstream analyses. In this example, genes on chromosome 21 with a low expression variation will be removed from the analysis. The cvExpr function calculates the Coefficient of Variation (CV) of each gene over a defined region. The input is the SummarizedExperiment, datExpr and a GRanges object containing the region of interest. Here, the length of chromosome 21 will be used as a GRanges object.
 <<subset for genes on chromosome 21>>=
 chr21 <- seqlengths(EnsDb.Hsapiens.v86)["21"]
-chr21Ranges <- GRanges(paste(21, paste(1, chr21, sep = "-"), sep = ":"))
+chr21Ranges <-  GRanges("21", IRanges(end = chr21, width=chr21))
 cvExpr.out <- cvExpr(se = datExprs, region = chr21Ranges)
 @
 
-The CV of the genes can be visualised using the function plotcvExpr. This function uses the output from cvExpr and produces a barplot of the CV for each gene (Figure 1). The user then has the option of removing genes below a specified quantile CV. Once a threshold has been determined clustering analysis can be performed. In this example, genes below the 25% quantile will be removed from the analysis as these are genes with low variation between samples. This will be performed is subsequent functions below in the CHARGE pipeline. 
+The CV of the genes can be visualised using the function plotcvExpr. This function uses the output from cvExpr and produces a barplot of the CV for each gene (Figure 1). The user then has the option of removing genes below a specified quantile CV. Once a threshold has been determined clustering analysis can be performed. In this example, genes below the 25\% quantile will be removed from the analysis as these are genes with low variation between samples. This will be performed is subsequent functions below in the CHARGE pipeline.
 <<plot the CV of gene expression>>=
 plotcvExpr(cvExpr = cvExpr.out)
 @
@@ -66,10 +67,11 @@ plotcvExpr(cvExpr = cvExpr.out)
 
 \section{Clustering analysis}
 
-The clusterExpr function requires the SummarizedExperiment and the output from cvExpr along with the user defined CV threshold. The function performs a clustering analysis using the defined genes and labels each sample as either hyperploidy or hypoploidy with respect to each group. For example, if a sample is labelled hyperploidy it means the average level of gene expression over the genomic region of interest is higher than the samples labelled hypoploidy. If the user is using a set of control samples where the number of chromosomes are known, then the labelling can be used to determine the other samples have chromosomal deletions or duplications. 
+The clusterExpr function requires the SummarizedExperiment and the output from cvExpr along with the user defined CV threshold. The function performs a clustering analysis using the defined genes and labels each sample as either hyperploidy or hypoploidy with respect to each group. For example, if a sample is labelled hyperploidy it means the average level of gene expression over the genomic region of interest is higher than the samples labelled hypoploidy. If the user is using a set of control samples where the number of chromosomes are known, then the labeling can be used to determine the other samples have chromosomal deletions or duplications.
 
 <<plot the CV of gene expression>>=
-datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25%")
+datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out,
+                        threshold = "25%")
 @
 
 The output of clusterExpr is the inputted SummarizedExperiment, but with an extra column in the meta data titled, Ploidy. This column has labelled each sample as either hyperploidy or hypoploidy. Since this data set contains control samples we would presume the Trisomy 21 samples have been labelled hyperploidy and the control samples and hypoploidy. This can be checked as shown below.
@@ -78,7 +80,7 @@ The output of clusterExpr is the inputted SummarizedExperiment, but with an extr
 data.frame(colData(datExprs))[c("characteristics_ch1", "Ploidy")]
 @
 
-As shown the control samples (Euploid) have been labelled Hypoploidy with respect to the Trisomy 21 samples. Moreover, the Trisomy 21 samples have been labelled Hyperploidy with respect to the control samples. In addition, compared to the labelling that was provided with the publicly available data, the clusterExpr has correctly labelled the data. However, in other data set the correct classification may be unknown. It is therefore important to check statically the likelihood of the genomic region being multiplied or deleted. 
+As shown the control samples (Euploid) have been labelled Hypoploidy with respect to the Trisomy 21 samples. Moreover, the Trisomy 21 samples have been labelled Hyperploidy with respect to the control samples. In addition, compared to the labeling that was provided with the publicly available data, the clusterExpr has correctly labelled the data. However, in other data set the correct classification may be unknown. It is therefore important to check statically the likelihood of the genomic region being multiplied or deleted.
 The clustering of the samples can be visualised using a principle component analysis (PCA) where the output from clusterExpr is used as input. Here in this example, there is good separation of the samples, suggesting that there are two distinct groups. However, this can be determined statically using a bimodal test.
 
 <<plot the pca of clustering>>=
@@ -99,10 +101,11 @@ pcaExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25%")
 
 \section{Bimodal Test}
 
-The CHARGE package contains a wrapper function titled bimodalTest, which utilises the diptest [1] and modes [2] R packages. This function tests for the likelihood of being two distinct groups using gene expression within the region of interest. The function requires the same inputs as the other functions and return a list of 2. 
+The CHARGE package contains a wrapper function titled bimodalTest, which utilizes the diptest [1] and modes [2] R packages. This function tests for the likelihood of being two distinct groups using gene expression within the region of interest. The function requires the same inputs as the other functions and return a list of 2.
 
 <<bimodal test>>=
-bimodalTest.out <- bimodalTest(se = datExprs, cvExpr = cvExpr.out, threshold = "25%")
+bimodalTest.out <- bimodalTest(se = datExprs, cvExpr = cvExpr.out,
+                               threshold = "25%")
 bimodalTest.out[[1]]
 @
 
@@ -125,15 +128,16 @@ plot(bimodalTest.out[[2]])
 
 \section{Expression Finder}
 
-This tutorial has focused on a data set where the region of interest was known. However, in other data sets the region may be unknown. CHARGE contains a function that uses a sliding window approach to scan regions and tests for bimodality. The user can adjust the size of the window, defined by the binWidth and how far the bin will slide along, known as the binStep. This function can be run using multiple threads, which may be desirable when using a small binWidth and binStep. In this tutorial, we’ll use a large binWidth to cover the largest chromosome to shorten computing time. 
+This tutorial has focused on a data set where the region of interest was known. However, in other data sets the region may be unknown. CHARGE contains a function that uses a sliding window approach to scan regions and tests for bimodality. The user can adjust the size of the window, defined by the binWidth and how far the bin will slide along, known as the binStep. This function can be run using multiple threads, which may be desirable when using a small binWidth and binStep. In this tutorial, we'll use a large binWidth to cover the largest chromosome to shorten computing time.
 
 <<Expression Finder>>=
 chrLengths <- GRanges(seqinfo(EnsDb.Hsapiens.v86)[c(1:22, "X", "Y")])
-exprFinder.out <- exprFinder(se = datExprs, ranges = chrLengths, binWidth = 1e+9, binStep = 1e+9, threshold = "25%")
+exprFinder.out <- exprFinder(se = datExprs, ranges = chrLengths,
+                             binWidth = 1e+9, binStep = 1e+9, threshold = "25%")
 exprFinder.out[1:3 ,c(1,6:10)]
 @
 
-The function returns a data frame, which can be turned into a Granges object using the Granges function. The function has tested every chromosome and only chromosome Y and 21 have returned as being significant. The Y chromosome was returned as it is most likely detecting sex differences. This function can also be used with a smaller binWidth to identify regions that either been duplicated or deleted.
+The function returns a data frame, which can be turned into a Granges object using the GRanges function. The function has tested every chromosome and only chromosome Y and 21 have returned as being significant. The Y chromosome was returned as it is most likely detecting sex differences. This function can also be used with a smaller binWidth to identify regions that either been duplicated or deleted.
 
 \section{Session Information}
 This analysis was conducted on:
@@ -143,7 +147,11 @@ sessionInfo()
 
 \section{References}
 [1] Hartigan JA, Hartigan PM. The Dip Test of Unimodality. The Annals of Statistics. 1985;13(1):70-84.
+
 [2] Deevi S. modes: Find the Modes and Assess the Modality of Complex and Mixture Distributions, Especially with Big Datasets. 2016.
-[3] Zhou X, Lindsay H, Robinson MD (2014). Robustly detecting differential expression in RNA sequencing data using observation weights. Nucleic Acids Research, 42(11), e91.
+
+[3] Morgan M, Obenchain V, Hester J and Pag?s H (2017). SummarizedExperiment: SummarizedExperiment container. R package version 1.8.0.
+
+[4] Zhou X, Lindsay H, Robinson MD (2014). Robustly detecting differential expression in RNA sequencing data using observation weights. Nucleic Acids Research, 42(11), e91.
 
 \end{document}
