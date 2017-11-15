@@ -1,7 +1,7 @@
 Package: CHARGE
 Type: Package
 Title: CHARGE: CHromosome Assessment in R from Gene Expression data
-Version: 0.99.01
+Version: 0.99.02
 Date: 2017-10-11
 Author: Benjamin Mayne
 Maintainer: Benjamin Mayne <benjamin.mayne@sahmri.com>
