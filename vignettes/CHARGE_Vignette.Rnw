@@ -77,10 +77,10 @@ datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out,
 The output of clusterExpr is the inputted SummarizedExperiment, but with an extra column in the meta data titled, Ploidy. This column has labelled each sample as either hyperploidy or hypoploidy. Since this data set contains control samples we would presume the Trisomy 21 samples have been labelled hyperploidy and the control samples and hypoploidy. This can be checked as shown below.
 
 <<check sample classification>>=
-data.frame(colData(datExprs))[c("characteristics_ch1", "Ploidy")]
+data.frame(colData(datExprs))[c("Group", "Ploidy")]
 @
 
-As shown the control samples (Euploid) have been labelled Hypoploidy with respect to the Trisomy 21 samples. Moreover, the Trisomy 21 samples have been labelled Hyperploidy with respect to the control samples. In addition, compared to the labeling that was provided with the publicly available data, the clusterExpr has correctly labelled the data. However, in other data set the correct classification may be unknown. It is therefore important to check statically the likelihood of the genomic region being multiplied or deleted.
+As shown the control samples (Normal) have been labelled Hypoploidy with respect to the Trisomy 21 samples. Moreover, the Trisomy 21 samples have been labelled Hyperploidy with respect to the control samples. In addition, compared to the labeling that was provided with the publicly available data, the clusterExpr has correctly labelled the data. However, in other data set the correct classification may be unknown. It is therefore important to check statically the likelihood of the genomic region being multiplied or deleted.
 The clustering of the samples can be visualised using a principle component analysis (PCA) where the output from clusterExpr is used as input. Here in this example, there is good separation of the samples, suggesting that there are two distinct groups. However, this can be determined statically using a bimodal test.
 
 <<plot the pca of clustering>>=
