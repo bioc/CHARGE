@@ -5,7 +5,7 @@ Version: 0.99.5
 Date: 2017-10-11
 Author: Benjamin Mayne
 Maintainer: Benjamin Mayne <benjamin.mayne@sahmri.com>
-Depends: R (>= 3.4.1), GenomicRanges, methods
+Depends: R (>= 3.5), GenomicRanges, methods
 Imports: SummarizedExperiment, FactoMineR, factoextra, ggplot2, IRanges, graphics, modes, parallel, plyr, cluster, diptest, stats, matrixStats
 Suggests: roxygen2, EnsDb.Hsapiens.v86
 biocViews: GeneExpression, Clustering
