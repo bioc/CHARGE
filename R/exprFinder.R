@@ -21,7 +21,6 @@
 #' @import plyr
 #' @author Benjamin Mayne
 #' @examples
-#' library(CHARGE)
 #' library(GenomicRanges)
 #' library(EnsDb.Hsapiens.v86)
 #' data(datExprs)

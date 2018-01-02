@@ -14,7 +14,6 @@
 #' @importFrom IRanges subsetByOverlaps
 #' @author Benjamin Mayne
 #' @examples
-#' library(CHARGE)
 #' library(GenomicRanges)
 #' data(datExprs)
 #' chr21 <- GRanges("21:1-46709983")
