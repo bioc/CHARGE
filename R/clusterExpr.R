@@ -12,6 +12,7 @@
 #' @importFrom methods is
 #' @author Benjamin Mayne
 #' @examples
+#' library(SummarizedExperiment)
 #' library(GenomicRanges)
 #' data(datExprs)
 #' chr21 <- GRanges("21:1-46709983")
