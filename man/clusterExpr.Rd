@@ -20,6 +20,7 @@ Returns a SummarizedExperiment containing the original inputted se, but where an
 Performs a clustering analysis and predict which samples have an enrichment for a genomic region of interest.
 }
 \examples{
+library(SummarizedExperiment)
 library(GenomicRanges)
 data(datExprs)
 chr21 <- GRanges("21:1-46709983")
