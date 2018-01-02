@@ -18,7 +18,6 @@ Returns a list containing the CV of each gene and the the quantile threshold of 
 Calculates the coefficient of variation for each gene within a defined genomic region.
 }
 \examples{
-library(CHARGE)
 library(GenomicRanges)
 data(datExprs)
 chr21 <- GRanges("21:1-46709983")

@@ -20,7 +20,6 @@ Returns a list containing the output from the bimodal test.
 Performs a bimodal test over a genomic region of interest.
 }
 \examples{
-library(CHARGE)
 library(GenomicRanges)
 data(datExprs)
 chr21 <- GRanges("21:1-46709983")

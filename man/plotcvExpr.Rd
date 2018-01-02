@@ -16,7 +16,6 @@ Returns a barplot showing the CV for each gene identifier over the region of int
 Plots the coefficient of variation or expression variation for each gene over a defined genomic region.
 }
 \examples{
-library(CHARGE)
 library(GenomicRanges)
 data(datExprs)
 chr21 <- GRanges("21:1-46709983")

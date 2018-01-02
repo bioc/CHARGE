@@ -26,7 +26,6 @@ Returns a data frame containing the genomic locations of each bin and bimodality
 Performs a bimodality test at multiple defined bin sizes across the genome using a sliding window approach.
 }
 \examples{
-library(CHARGE)
 library(GenomicRanges)
 library(EnsDb.Hsapiens.v86)
 data(datExprs)

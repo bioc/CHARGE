@@ -20,7 +20,6 @@ Returns a PCA plot showing the seperation of samples that were labelled hyperplo
 Creates a PCA plot using genes within a defined genomic region.
 }
 \examples{
-library(CHARGE)
 library(GenomicRanges)
 data(datExprs)
 chr21 <- GRanges("21:1-46709983")
