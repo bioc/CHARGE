@@ -22,9 +22,6 @@
 
 cvExpr <- function(se, region){
 
-  library(SummarizedExperiment)
-  library(matrixStats)
-
   ### Unit tests to see if the inputted data is in the correct format
   #### se must be a RangedSummarizedExperiment
   if(!is(se, "RangedSummarizedExperiment")){
