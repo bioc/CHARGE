@@ -1,12 +1,12 @@
 Package: CHARGE
 Type: Package
 Title: CHARGE: CHromosome Assessment in R from Gene Expression data
-Version: 0.99.5
+Version: 0.99.6
 Date: 2017-10-11
 Author: Benjamin Mayne
 Maintainer: Benjamin Mayne <benjamin.mayne@sahmri.com>
 Depends: R (>= 3.5), GenomicRanges, methods
-Imports: SummarizedExperiment, FactoMineR, factoextra, ggplot2, IRanges, graphics, modes, parallel, plyr, cluster, diptest, stats, matrixStats
+Imports: SummarizedExperiment, FactoMineR, factoextra, IRanges, graphics, modes, parallel, plyr, cluster, diptest, stats, matrixStats
 Suggests: roxygen2, EnsDb.Hsapiens.v86
 biocViews: GeneExpression, Clustering
 Description: Identifies genomic duplications or deletions from gene expression data. 
