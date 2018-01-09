@@ -2,7 +2,7 @@
 #'
 #' Performs a bimodality test at multiple defined bin sizes across the genome using a sliding window approach.
 #'
-#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param se A SummarizedExperiment containing the nromalised gene expression data.
 #' @param ranges A GRanges object containing the genomic regions to scan.
 #' @param binWidth The length of each bin.
 #' @param binStep The distance the bin will slide.
@@ -28,6 +28,10 @@
 #' chrLengths <- GRanges(seqinfo(EnsDb.Hsapiens.v86)[c("21", "22", "Y")])
 #' exprFinder.out <- exprFinder(se = datExprs, ranges = chrLengths,
 #' binWidth = 1e+9, binStep = 1e+9, threshold = "25%")
+#' @details
+#' Uses a sliding window approach to scan over a defined genomic region.
+#' It automatically performs a bimodal test and calculates Hartigan's dip test statistic for unimodality and returns a data frame
+#' listing each bin and the statistical likelihood of a duplication or deletion.
 #' @export
 
 exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads = 1){

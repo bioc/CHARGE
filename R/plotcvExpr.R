@@ -13,6 +13,9 @@
 #' chr21 <- GRanges("21:1-46709983")
 #' cvExpr.out <- cvExpr(se = datExprs, region = chr21)
 #' plotcvExpr(cvExpr = cvExpr.out)
+#' @details
+#' Generates a bar plot showing the coefficient of variation or expression variation for each gene on the Y axis.
+#' The red, blue, green and gold horizontal lines show the 0%, 25%, 50%, 75% quartiles respectively.
 #' @export
 
 plotcvExpr <- function(cvExpr){

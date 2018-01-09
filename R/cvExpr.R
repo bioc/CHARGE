@@ -2,7 +2,7 @@
 #'
 #' Calculates the coefficient of variation for each gene within a defined genomic region.
 #'
-#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param se A SummarizedExperiment containing the normalised gene expression data.
 #' @param region A GRanges object containing the genomic location of the region of interest. This can either be an entire length or the subset of a chromosome.
 #' @usage cvExpr(se, region)
 #' @return Returns a list containing the CV of each gene and the the quantile threshold of the data.
@@ -18,6 +18,9 @@
 #' data(datExprs)
 #' chr21 <- GRanges("21:1-46709983")
 #' cvExpr.out <- cvExpr(se = datExprs, region = chr21)
+#' @details
+#' Calculates the coefficient of variation (CV) for each gene with a genomic region of interest.
+#' The CV Values can be used to determine which genes are not critical for appropiate clustering and can be filtered out prior to clustering.
 #' @export
 
 cvExpr <- function(se, region){

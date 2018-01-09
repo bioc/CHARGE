@@ -2,7 +2,7 @@
 #'
 #' Creates a PCA plot using genes within a defined genomic region.
 #'
-#' @param se A SummarizedExperiment containing the gene expression data and the clustering output from clusterExpr.
+#' @param se A SummarizedExperiment containing the normalised gene expression data and the clustering output from clusterExpr.
 #' @param cvExpr The output from cvExpr.
 #' @param threshold Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.
 #' @usage pcaExpr(se, cvExpr, threshold = NULL)
@@ -19,6 +19,8 @@
 #' cvExpr.out <- cvExpr(se = datExprs, region = chr21)
 #' datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25%")
 #' pcaExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25%")
+#' @details
+#' Performs a principle component analysis for a given gene expression data using only genes within a defined region.
 #' @export
 
 

@@ -1,8 +1,8 @@
 #' clusterExpr
 #'
-#' Performs a clustering analysis and predict which samples have an enrichment for a genomic region of interest.
+#' Performs a partitioning clustering analysis in order to predict which samples have an enrichment for a genomic region of interest.
 #'
-#' @param se A SummarizedExperiment containing the gene expression data.
+#' @param se A SummarizedExperiment containing the normalised gene expression data.
 #' @param cvExpr The output from cvExpr.
 #' @param threshold Optional. The quantile threshold of genes to be used for clustering analaysis. Default is NULL.
 #' @usage clusterExpr(se, cvExpr, threshold = NULL)
@@ -19,6 +19,9 @@
 #' cvExpr.out <- cvExpr(se = datExprs, region = chr21)
 #' datExprs <- clusterExpr(se = datExprs, cvExpr = cvExpr.out, threshold = "25%")
 #' colData(datExprs)$Ploidy
+#' @details
+#' Performs a partitioning clustering to predict which samples have a genomic duplication or deletion of a genomic region of interest.
+#' Samples are labelled Hyperploidy or Hypoploidy with respect to one another which are arbitrary labels referring to an enrichment or loss of genomic region.
 #' @export
 
 clusterExpr <- function(se, cvExpr, threshold = NULL){
