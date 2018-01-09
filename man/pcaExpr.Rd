@@ -7,7 +7,7 @@
 pcaExpr(se, cvExpr, threshold = NULL)
 }
 \arguments{
-\item{se}{A SummarizedExperiment containing the gene expression data and the clustering output from clusterExpr.}
+\item{se}{A SummarizedExperiment containing the normalised gene expression data and the clustering output from clusterExpr.}
 
 \item{cvExpr}{The output from cvExpr.}
 
@@ -18,6 +18,9 @@ Returns a PCA plot showing the seperation of samples that were labelled hyperplo
 }
 \description{
 Creates a PCA plot using genes within a defined genomic region.
+}
+\details{
+Performs a principle component analysis for a given gene expression data using only genes within a defined region.
 }
 \examples{
 library(GenomicRanges)

@@ -7,7 +7,7 @@
 cvExpr(se, region)
 }
 \arguments{
-\item{se}{A SummarizedExperiment containing the gene expression data.}
+\item{se}{A SummarizedExperiment containing the normalised gene expression data.}
 
 \item{region}{A GRanges object containing the genomic location of the region of interest. This can either be an entire length or the subset of a chromosome.}
 }
@@ -16,6 +16,10 @@ Returns a list containing the CV of each gene and the the quantile threshold of 
 }
 \description{
 Calculates the coefficient of variation for each gene within a defined genomic region.
+}
+\details{
+Calculates the coefficient of variation (CV) for each gene with a genomic region of interest.
+The CV Values can be used to determine which genes are not critical for appropiate clustering and can be filtered out prior to clustering.
 }
 \examples{
 library(GenomicRanges)

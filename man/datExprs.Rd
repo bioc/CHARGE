@@ -3,7 +3,7 @@
 \docType{data}
 \name{datExprs}
 \alias{datExprs}
-\title{A SummarizedExperiment from a publicly available RNA-seq data set. The data set is GSE55504 and contains 16 samples where 8 are euploid or chromosome 21 and the other 8 are trisomy.}
+\title{A SummarizedExperiment from a publicly available RNA-seq data set, where the samples were sequenced on a Illumina HiSeq 2000. The data set is GSE55504 and contains 16 primary fibroblast samples where 8 are euploid for chromosome 21 and the other 8 are trisomy.}
 \format{RangedSummarizedExperiment}
 \usage{
 data(datExprs)
@@ -16,7 +16,7 @@ A RangedSummarizedExperiment containing normalised RNA-seq data from the data se
 }
 \details{
 \itemize{
-	\item datExprs A RangedSummarizedExperiment containing normalised RNA-seq data from the data set GSE55504 which contains fibroblast samples from patients with and without Down Syndrome. 
+	\item datExprs A RangedSummarizedExperiment containing normalised RNA-seq data from the data set GSE55504 which contains fibroblast samples from patients with and without Down Syndrome.
 }
 
 This dataset 16 fibroblast samples from patients with Down syndrome (8 samples) and are euploid for chromosome 21 (8 samples).

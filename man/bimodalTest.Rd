@@ -7,7 +7,7 @@
 bimodalTest(se, cvExpr, threshold = NULL)
 }
 \arguments{
-\item{se}{A SummarizedExperiment containing the gene expression data.}
+\item{se}{A SummarizedExperiment containing the normalised gene expression data.}
 
 \item{cvExpr}{The output from cvExpr.}
 
@@ -17,7 +17,14 @@ bimodalTest(se, cvExpr, threshold = NULL)
 Returns a list containing the output from the bimodal test.
 }
 \description{
-Performs a bimodal test over a genomic region of interest.
+Performs a bimodal test and calcualtes Hartigan's statistic and p-value over a genomic region of interest using gene expression data set, the output from cvExpr.
+}
+\details{
+Performs a bimodal test and calculates Hartigan's dip test statistic for unimodality for a given gene expression data set.
+A bimodality coefficient value > 5/9 suggests bimodality and the closer the bimodality ratio is to 1, the more evenly distrubted the data set.
+The dip statistic and p-value can be used to determine if the region of interest is statistically significant.
+
+The second part of the function returns the Z score means which can be used to visualise the denisty or distribution of the samples.
 }
 \examples{
 library(GenomicRanges)

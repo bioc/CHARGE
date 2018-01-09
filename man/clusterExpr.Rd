@@ -7,7 +7,7 @@
 clusterExpr(se, cvExpr, threshold = NULL)
 }
 \arguments{
-\item{se}{A SummarizedExperiment containing the gene expression data.}
+\item{se}{A SummarizedExperiment containing the normalised gene expression data.}
 
 \item{cvExpr}{The output from cvExpr.}
 
@@ -17,7 +17,11 @@ clusterExpr(se, cvExpr, threshold = NULL)
 Returns a SummarizedExperiment containing the original inputted se, but where an additional column labelled Ploidy has been added into the meta data containing the classification of each sample.
 }
 \description{
-Performs a clustering analysis and predict which samples have an enrichment for a genomic region of interest.
+Performs a partitioning clustering analysis in order to predict which samples have an enrichment for a genomic region of interest.
+}
+\details{
+Performs a partitioning clustering to predict which samples have a genomic duplication or deletion of a genomic region of interest.
+Samples are labelled Hyperploidy or Hypoploidy with respect to one another which are arbitrary labels referring to an enrichment or loss of genomic region.
 }
 \examples{
 library(SummarizedExperiment)

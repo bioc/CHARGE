@@ -7,7 +7,7 @@
 exprFinder(se, ranges, binWidth, binStep, threshold = NULL, threads = 1)
 }
 \arguments{
-\item{se}{A SummarizedExperiment containing the gene expression data.}
+\item{se}{A SummarizedExperiment containing the nromalised gene expression data.}
 
 \item{ranges}{A GRanges object containing the genomic regions to scan.}
 
@@ -24,6 +24,11 @@ Returns a data frame containing the genomic locations of each bin and bimodality
 }
 \description{
 Performs a bimodality test at multiple defined bin sizes across the genome using a sliding window approach.
+}
+\details{
+Uses a sliding window approach to scan over a defined genomic region.
+It automatically performs a bimodal test and calculates Hartigan's dip test statistic for unimodality and returns a data frame
+listing each bin and the statistical likelihood of a duplication or deletion.
 }
 \examples{
 library(GenomicRanges)

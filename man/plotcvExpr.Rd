@@ -15,6 +15,10 @@ Returns a barplot showing the CV for each gene identifier over the region of int
 \description{
 Plots the coefficient of variation or expression variation for each gene over a defined genomic region.
 }
+\details{
+Generates a bar plot showing the coefficient of variation or expression variation for each gene on the Y axis.
+The red, blue, green and gold horizontal lines show the 0%, 25%, 50%, 75% quartiles respectively.
+}
 \examples{
 library(GenomicRanges)
 data(datExprs)
