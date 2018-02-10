@@ -133,7 +133,7 @@ exprFinder <- function(se, ranges, binWidth, binStep, threshold = NULL, threads 
 
   ### Use the bimodalBin function on every bin
   ### mclapply can be used to make use of multiple cores (if possible)
-  bimodalBinOut <- mclapply(X = bins, se = se, threshold = threshold, FUN = bimodalBin, mc.cores = threads)
+  bimodalBinOut <- mclapply(X = as(bins, "GRangesList"), se = se, threshold = threshold, FUN = bimodalBin, mc.cores = threads)
 
   ### unlist bimodalBinOut into a singel data frame and return it
   bimodalBinOut <- ldply(bimodalBinOut)
