@@ -1,7 +1,7 @@
 Package: CHARGE
 Type: Package
 Title: CHARGE: CHromosome Assessment in R from Gene Expression data
-Version: 1.9.0
+Version: 1.9.1
 Date: 2017-10-11
 Author: Benjamin Mayne
 Maintainer: Benjamin Mayne <benjamin.mayne@sahmri.com>
@@ -14,4 +14,5 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Collate: 'bimodalTest.R' 'CHARGE.R' 'clusterExpr.R' 'cvExpr.R' 'exprFinder.R' 'pcaExpr.R' 'plotcvExpr.R'
+Collate: 'bimodalTest.R' 'CHARGE.R' 'clusterExpr.R' 'cvExpr.R' 'exprFinder.R' 'pcaExpr.R' 'plotcvExpr.R' 'zzz.R'
+PackageStatus: Deprecated
